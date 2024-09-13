@@ -1,25 +1,64 @@
-import logo from './logo.svg';
+import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import { useState, useEffect } from 'react';
 import './App.css';
+import Jobs from './components/Jobs';
+import JobContext from './context/JobContext';
+import JobDetails from './components/JobDetails';
+import BookMarks from './components/BookMarks';
 
-function App() {
+const App = () => {
+  const [jobList, setJobList] = useState([])
+
+  const [jobDetails, setJobDetails] = useState({})
+
+  let [bookMarkJobList, setBookMarkJobList] = useState([])
+ 
+
+  const updateJobList = (dataList) => {
+    setJobList(dataList)
+  }
+
+  const updateJobDetails = (details) => {
+    setJobDetails(details)
+  }
+
+  const updateBookMarkJobList = (newDetails) => {
+    setBookMarkJobList(prevState => [...prevState, newDetails])
+  }
+
+  useEffect(() => {
+    if(bookMarkJobList !== null) {
+      sessionStorage.setItem("JobList", JSON.stringify(bookMarkJobList))
+    }
+  })
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+    <JobContext.Provider 
+      value={{
+        jobList,
+        jobDetails,
+        bookMarkJobList,
+        updateJobList: updateJobList,
+        updateJobDetails: updateJobDetails,
+        updateBookMarkJobList: updateBookMarkJobList,
+      }}
+    >
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Jobs />} />
+          <Route path="/jobs-details" element={<JobDetails />} />
+          <Route path="/book-mark" element={<BookMarks />} />
+        </Routes>
+      </BrowserRouter>
+
+    </JobContext.Provider>
+
+
+
+    
+    
+  )
 }
 
-export default App;
+export default App
